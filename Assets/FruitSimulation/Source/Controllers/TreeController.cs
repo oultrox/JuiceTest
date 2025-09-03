@@ -1,17 +1,22 @@
 using AnimationService;
-using TestEngine.Source.Entities;
+using FruitSimulation.Source.Configs;
+using FruitSimulation.Source.Entities;
 using UnityEngine;
 
 namespace FruitSimulation.Source.Controllers
 {
     public class TreeController: MonoBehaviour
     { 
+        [Header ("Injection")]
         [SerializeField] GameFeelVFXConfig _leafsEffectConfig;
         [SerializeField] GameFeelVFXConfig _trunkEffectConfig;  
+        [SerializeField] GameObject objectPrefab;
+        
+        [Header ("Inside-Components")]
         [SerializeField] SpriteRenderer treeSprite;
         [SerializeField] SpriteRenderer trunkSprite;
-        [SerializeField] GameObject objectPrefab;
         [SerializeField] Transform[] spawnerPoints;
+        
         EntitySpawner _spawner;
         AnimatorService _leafsAnimatorService;
         AnimatorService _trunkAnimatorService;

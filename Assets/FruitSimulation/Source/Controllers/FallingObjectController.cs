@@ -1,4 +1,5 @@
 using AnimationService;
+using FruitSimulation.Source.Configs;
 using FruitSimulation.Source.Events;
 using FruitSimulation.Source.PhysicsMotor;
 using SimpleBus;
@@ -12,6 +13,7 @@ namespace FruitSimulation.Source.Controllers
     [RequireComponent(typeof(BoxCollider2D))]
     public class FallingObjectController : MonoBehaviour
     {
+        [Header ("Injection")]
         [SerializeField] GameFeelVFXConfig juiceConfig;
         [SerializeField] PhysicsConfig physicsConfig;
         EventListener<ObjectPickedEvent> _onObjectPicked;

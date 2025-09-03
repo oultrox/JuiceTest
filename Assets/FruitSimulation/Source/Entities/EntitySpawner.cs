@@ -4,7 +4,7 @@ using FruitSimulation.Source.Events;
 using SimpleBus;
 using UnityEngine;
 
-namespace TestEngine.Source.Entities
+namespace FruitSimulation.Source.Entities
 {
     public class EntitySpawner
     {

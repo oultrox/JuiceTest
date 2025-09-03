@@ -1,6 +1,6 @@
 using System;
 using CustomRaycastEngine;
-using TestEngine.Source.PhysicsMotor;
+using FruitSimulation.Source.Configs;
 using UnityEngine;
 
 namespace FruitSimulation.Source.PhysicsMotor

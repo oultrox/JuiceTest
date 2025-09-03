@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TestEngine.Source.PhysicsMotor
+namespace FruitSimulation.Source.Configs
 {
     public interface IPhysicsConfig
     {
