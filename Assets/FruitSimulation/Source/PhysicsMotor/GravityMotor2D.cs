@@ -1,14 +1,16 @@
 using System;
+using CustomRaycastEngine;
+using TestEngine.Source.PhysicsMotor;
 using UnityEngine;
 
-namespace TestEngine.Source.PhysicsMotor
+namespace FruitSimulation.Source.PhysicsMotor
 {
     /// <summary>
-    /// Engine motor for movement-related gravity entities.
+    /// Engine motor for movement-related entities.
     /// </summary>
     public class GravityMotor2D : RaycastMotor2D
     {
-        public struct CollisionInfo
+        struct CollisionInfo
         {
             public bool above, below;
             public bool left, right;
@@ -26,6 +28,7 @@ namespace TestEngine.Source.PhysicsMotor
         float _maxFallSpeed; 
         float _bounceFactor;
         float _deceleration;
+        bool _isActive;
         CollisionInfo _collisionInfo;
         LayerMask _collisionMask;
         Transform _transform;
@@ -42,6 +45,15 @@ namespace TestEngine.Source.PhysicsMotor
             _bounceFactor = config.BounceFactor;
             _deceleration = config.Deceleration;
         }
+
+        /// <summary>
+        /// Enables ticking for the raycast motor engine.
+        /// </summary>
+        /// <param name="active"></param>
+        public void SetActive(bool active)
+        {
+            _isActive = active;
+        }
         
         /// <summary>
         /// Optional: set initial velocity for throwing objects.
@@ -51,14 +63,18 @@ namespace TestEngine.Source.PhysicsMotor
             _velocity = velocity;
         }
 
+        /// <summary>
+        /// Executes the motor engine calculations for raycasts. Includes Gravity and raycast orientations.
+        /// </summary>
+        /// <param name="dt"></param>
         public void Tick(float dt)
         {
+            if(!_isActive) return;
             ApplyGravity(ref _velocity);
             ApplyHorizontalDeceleration(ref _velocity, dt);
             ApplyMovement(dt);
             SnapVertical(ref _velocity);
         }
-
         
         void ApplyMovement(float dt)
         {
@@ -104,14 +120,30 @@ namespace TestEngine.Source.PhysicsMotor
         
         void ApplyGravity(ref Vector2 velocity)
         {
-            // Apply gravity
             velocity.y += _gravity * Time.deltaTime;
             if (velocity.y < _maxFallSpeed)
                 velocity.y = _maxFallSpeed;
         }
+        
+        void ApplyHorizontalDeceleration(ref Vector2 velocity, float dt)
+        {
+            bool isBouncing = _collisionInfo.left || _collisionInfo.right;
+            if (isBouncing) return; 
+            if (Mathf.Approximately(velocity.x, 0)) return;
+
+            float decel = _deceleration * dt;
+            if (Mathf.Abs(velocity.x) <= decel)
+            {
+                velocity.x = 0;
+            }
+            else
+            {
+                velocity.x -= Mathf.Sign(velocity.x) * decel;
+            }
+        }
 
         /// <summary>
-        /// Checks horizontal and vertical collisions separately for more precise slope/ground calculations.
+        /// Checks horizontal collisions separately for more precise wall calculations, applying bounce factors if possible.
         /// </summary>
         /// <param name="moveAmount"></param>
         void CheckHorizontalCollisions(ref Vector2 moveAmount)
@@ -154,23 +186,10 @@ namespace TestEngine.Source.PhysicsMotor
             }
         }
         
-        void ApplyHorizontalDeceleration(ref Vector2 velocity, float dt)
-        {
-            bool isBouncing = _collisionInfo.left || _collisionInfo.right;
-            if (isBouncing) return; 
-            if (Mathf.Approximately(velocity.x, 0)) return;
-
-            float decel = _deceleration * dt;
-            if (Mathf.Abs(velocity.x) <= decel)
-            {
-                velocity.x = 0;
-            }
-            else
-            {
-                velocity.x -= Mathf.Sign(velocity.x) * decel;
-            }
-        }
-        
+        /// <summary>
+        /// Checks vertical collisions separately for more precise ground calculations, applying bounce factors if possible.
+        /// </summary>
+        /// <param name="moveAmount"></param>
         void CheckVerticalCollisions(ref Vector2 moveAmount)
         {
             float directionY = Mathf.Sign(moveAmount.y);

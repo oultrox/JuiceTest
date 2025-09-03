@@ -1,9 +1,9 @@
+using FruitSimulation.Source.Events;
 using SimpleBus;
-using TestEngine.Source.Events;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace TestEngine.Source.TouchInput
+namespace FruitSimulation.Source.Controllers
 {
     /// <summary>
     /// In charge of the drag mechanics.

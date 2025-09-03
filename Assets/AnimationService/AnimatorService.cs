@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace TestEngine.Source.Juice
+namespace AnimationService
 {
     /// <summary>
     /// Component for displaying animations and applying code-driven animations.
@@ -48,6 +48,9 @@ namespace TestEngine.Source.Juice
             _coroutineHost.StartCoroutine(DoScale(targetScale, duration));
         }
 
+        /// <summary>
+        /// Plays a squash effect by horizontally stretching the scale of the sprite and resetting it.
+        /// </summary>
         public void PlaySquash(float intensity = 0.2f, float duration = 0.2f)
         {
             Vector3 targetScale = new Vector3(_originalScale.x + intensity, _originalScale.y - intensity, _originalScale.z);

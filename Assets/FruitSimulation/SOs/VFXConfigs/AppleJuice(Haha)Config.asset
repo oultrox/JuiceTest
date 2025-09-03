@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cbdb350bac947ec860066dbcf3fedf7, type: 3}
   m_Name: AppleJuice(Haha)Config
   m_EditorClassIdentifier: 
-  shrinkFactor: 0.05
+  shrinkFactor: 0.1
+  shrinkDuration: 0.1
   wobbleFactor: 0
+  wobbleDuration: 5
   stretchFactor: 0.08
+  stretchDuration: 0.2
   squashFactor: 0.04
+  squashDuration: 0.2

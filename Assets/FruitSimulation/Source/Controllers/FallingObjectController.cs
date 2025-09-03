@@ -1,10 +1,14 @@
+using AnimationService;
+using FruitSimulation.Source.Events;
+using FruitSimulation.Source.PhysicsMotor;
 using SimpleBus;
-using TestEngine.Source.Events;
-using TestEngine.Source.Juice;
 using UnityEngine;
 
-namespace TestEngine.Source.PhysicsMotor
+namespace FruitSimulation.Source.Controllers
 {
+    /// <summary>
+    /// Controls any falling object that gets this component attached, executing engine and code-driven animations.
+    /// </summary>
     [RequireComponent(typeof(BoxCollider2D))]
     public class FallingObjectController : MonoBehaviour
     {
@@ -17,17 +21,15 @@ namespace TestEngine.Source.PhysicsMotor
         Vector2 _velocity;
         AnimatorService _animator;
         SpriteRenderer _spriteRenderer;
-        bool _isActive;
-
         
-        private void Awake()
+        
+        void Awake()
         {
             InitBehaviors();
         }
 
         void Update()
         {
-            if (!_isActive) return;
             _motor.Tick(Time.deltaTime);
         }
         
@@ -35,21 +37,25 @@ namespace TestEngine.Source.PhysicsMotor
         {
             _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             _collider = GetComponent<BoxCollider2D>();
+            
             _motor = new GravityMotor2D(transform, _collider, physicsConfig);
+            _motor.OnBounce += BounceSprite;
+            
             _animator = new AnimatorService(this, _spriteRenderer);
+            _animator.PlayShrinkFromSmallToBig(juiceConfig.ShrinkFactor, juiceConfig.ShrinkDuration);
+            
             _onObjectPicked = new EventListener<ObjectPickedEvent>(CheckPickedUp);
             _onObjectDropped = new EventListener<ObjectDroppedEvent>(LaunchObject);
-            _motor.OnBounce += BounceSprite;
+            
             EventBus<ObjectPickedEvent>.Register(_onObjectPicked);
             EventBus<ObjectDroppedEvent>.Register(_onObjectDropped);
-            _animator.PlayShrinkFromSmallToBig(juiceConfig.ShrinkFactor, juiceConfig.ShrinkDuration);
         }
 
         void LaunchObject(ObjectDroppedEvent obj)
         {
             if (obj.Transform != transform) return;
             
-            _isActive = true;
+            _motor.SetActive(true);
             _motor.SetVelocity(obj.Velocity);
         }
 
@@ -57,8 +63,8 @@ namespace TestEngine.Source.PhysicsMotor
         {
             if (obj.Transform != transform) return;
             
-            _isActive = false;
             transform.parent = null;
+            _motor.SetActive(false);
             _animator.PlayStretch(juiceConfig.StretchFactor);
         }
         

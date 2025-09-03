@@ -1,7 +1,7 @@
 using SimpleBus;
 using UnityEngine;
 
-namespace TestEngine.Source.Events
+namespace FruitSimulation.Source.Events
 {
     public struct ObjectPickedEvent : IEvent
     {

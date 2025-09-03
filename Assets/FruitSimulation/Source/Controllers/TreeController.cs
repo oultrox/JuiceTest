@@ -1,7 +1,8 @@
-using TestEngine.Source.Juice;
+using AnimationService;
+using TestEngine.Source.Entities;
 using UnityEngine;
 
-namespace TestEngine.Source.Entities
+namespace FruitSimulation.Source.Controllers
 {
     public class TreeController: MonoBehaviour
     { 
