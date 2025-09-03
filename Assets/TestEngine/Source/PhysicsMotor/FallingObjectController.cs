@@ -6,8 +6,9 @@ using UnityEngine;
 namespace TestEngine.Source.PhysicsMotor
 {
     [RequireComponent(typeof(BoxCollider2D))]
-    public class FallingObjectMotorController : MonoBehaviour
+    public class FallingObjectController : MonoBehaviour
     {
+        [SerializeField] GameFeelVFXConfig juiceConfig;
         [SerializeField] PhysicsConfig physicsConfig;
         EventListener<ObjectPickedEvent> _onObjectPicked;
         EventListener<ObjectDroppedEvent> _onObjectDropped;
@@ -23,7 +24,7 @@ namespace TestEngine.Source.PhysicsMotor
         {
             InitBehaviors();
         }
-        
+
         void Update()
         {
             if (!_isActive) return;
@@ -41,26 +42,29 @@ namespace TestEngine.Source.PhysicsMotor
             _motor.OnBounce += BounceSprite;
             EventBus<ObjectPickedEvent>.Register(_onObjectPicked);
             EventBus<ObjectDroppedEvent>.Register(_onObjectDropped);
+            _animator.PlayShrinkFromSmallToBig(juiceConfig.ShrinkFactor, juiceConfig.ShrinkDuration);
         }
 
         void LaunchObject(ObjectDroppedEvent obj)
         {
+            if (obj.Transform != transform) return;
+            
             _isActive = true;
             _motor.SetVelocity(obj.Velocity);
         }
 
         void CheckPickedUp(ObjectPickedEvent obj)
         {
-            if (obj.ObjectTransform != transform) return;
+            if (obj.Transform != transform) return;
             
             _isActive = false;
             transform.parent = null;
-            _animator.PlayStretch(0.08f);
+            _animator.PlayStretch(juiceConfig.StretchFactor);
         }
         
         void BounceSprite()
         {
-            _animator.PlaySquash(0.04f);
+            _animator.PlaySquash(juiceConfig.SquashFactor);
         }
     }
 }

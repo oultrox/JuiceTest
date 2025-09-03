@@ -29,6 +29,15 @@ namespace TestEngine.Source.Juice
             if (Mathf.Abs(horizontalInput) > 0.01f)
                 _spriteRenderer.flipX = horizontalInput < 0;
         }
+        
+        /// <summary>
+        /// Plays a stretch effect by vertically stretching the scale of the sprite and resetting it.
+        /// </summary>
+        public void PlayShrinkFromSmallToBig(float scale = 0.2f, float duration = 0.5f)
+        {
+            Vector3 targetScale = new Vector3(_originalScale.x - scale, _originalScale.y - scale, _originalScale.z);
+            _coroutineHost.StartCoroutine(DoScale(targetScale, duration));
+        }
 
         /// <summary>
         /// Plays a stretch effect by vertically stretching the scale of the sprite and resetting it.

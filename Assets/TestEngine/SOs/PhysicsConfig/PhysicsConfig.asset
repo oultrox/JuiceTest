@@ -18,4 +18,4 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 128
-  decceleration: 15
+  decceleration: 29.5

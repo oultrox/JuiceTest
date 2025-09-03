@@ -89,7 +89,7 @@ namespace TestEngine.Source.TouchInput
         void ClearTarget(InputAction.CallbackContext context)
         {
             if (_currentTarget == null) return; 
-            EventBus<ObjectDroppedEvent>.Raise(new ObjectDroppedEvent(_smoothedVelocity));
+            EventBus<ObjectDroppedEvent>.Raise(new ObjectDroppedEvent(_smoothedVelocity, _currentTarget));
             _currentTarget = null;
         }
     }

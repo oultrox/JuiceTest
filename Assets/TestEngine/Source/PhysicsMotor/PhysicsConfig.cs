@@ -2,7 +2,7 @@ using TestEngine.Source.PhysicsMotor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "PhysicsConfig", menuName = "Configuration/PhysicsConfig", order = 1)]
+[CreateAssetMenu(fileName = "Config", menuName = "Configuration/PhysicsConfig", order = 1)]
 public class PhysicsConfig : ScriptableObject, IPhysicsConfig
 {
     [SerializeField] float gravityForce = -20 ;
