@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravityForce: -20
   maxFallSpeed: -30
-  bounceFactor: 0.423
+  bounceFactor: 0.478
   collisionMask:
     serializedVersion: 2
     m_Bits: 128

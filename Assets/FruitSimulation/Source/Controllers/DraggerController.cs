@@ -19,6 +19,7 @@ namespace FruitSimulation.Source.Controllers
         Vector3 _lastMouseWorldPos;
         Vector2 _smoothedVelocity;
         
+        
         void Awake()
         {
             InitBehaviors();
@@ -35,7 +36,7 @@ namespace FruitSimulation.Source.Controllers
             CheckTouchVelocity();
         }
         
-        private void InitBehaviors()
+        void InitBehaviors()
         {
             _camera = Camera.main;
             _playerInput = GetComponent<PlayerInput>();
@@ -61,10 +62,14 @@ namespace FruitSimulation.Source.Controllers
                 float.MaxValue, movableLayerMask);
 
             if (hit.collider == null) return;
-            Debug.Log("OBJECT IS FOUND!: " + hit.collider.gameObject.name);
+
             _currentTarget = hit.transform;
-            _offset = hit.transform.position - _camera.ScreenToWorldPoint(Input.mousePosition);
-            EventBus<ObjectPickedEvent>.Raise(new ObjectPickedEvent(_currentTarget));
+            var root = _currentTarget.root;
+
+            _offset = _currentTarget.position - _camera.ScreenToWorldPoint(Input.mousePosition);
+
+            EventBus<ObjectPickedEvent>.Raise(new ObjectPickedEvent(_currentTarget, root));
+
         }
 
         void ApplyDragging()

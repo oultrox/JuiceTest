@@ -64,9 +64,7 @@ namespace FruitSimulation.Source.Controllers
 
         void CheckPickedUp(ObjectPickedEvent obj)
         {
-            if (obj.Transform != transform) return;
-            
-            transform.parent = null;
+            if (obj.TargetTransform != transform) return;
             _motor.SetActive(false);
             _animator.PlayStretch();
         }

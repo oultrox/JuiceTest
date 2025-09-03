@@ -5,11 +5,13 @@ namespace FruitSimulation.Source.Events
 {
     public struct ObjectPickedEvent : IEvent
     {
-        public Transform Transform { get;  private set; }
-
-        public ObjectPickedEvent(Transform transform)
+        public Transform TargetTransform { get;  private set; }
+        public Transform RootTransform { get;  private set; }
+        
+        public ObjectPickedEvent(Transform targetTransform, Transform rootTransform)
         {
-            Transform = transform;
+            TargetTransform = targetTransform;
+            RootTransform  = rootTransform;
         }
     }
 }

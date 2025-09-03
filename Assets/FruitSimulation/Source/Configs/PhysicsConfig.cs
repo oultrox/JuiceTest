@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace FruitSimulation.Source.Configs
 {
@@ -10,7 +9,8 @@ namespace FruitSimulation.Source.Configs
         [SerializeField] float maxFallSpeed = -30;
         [Range(0f, 1f)] [SerializeField] float bounceFactor = 0.5f;
         [SerializeField] LayerMask collisionMask;
-        [FormerlySerializedAs("deccaceleration")] [SerializeField] float decceleration;
+        [SerializeField] float decceleration;
+        
         public float GravityForce => gravityForce;
         public float MaxFallSpeed => maxFallSpeed;
         public float BounceFactor => bounceFactor;

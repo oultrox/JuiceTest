@@ -6,47 +6,30 @@ using UnityEngine;
 
 namespace FruitSimulation.Source.Entities
 {
+    /// <summary>
+    /// Just takes care of spawning given prefabs. Nothing fancy.
+    /// </summary>
     public class EntitySpawner
     {
         readonly GameObject _prefab;
-        readonly Transform[] _spawnPoints;
-        readonly EventListener<ObjectPickedEvent> _onObjectPicked;
         readonly EventListener<ObjectDroppedEvent> _onObjectDropped;
         readonly Dictionary<Transform, GameObject> _prefabsInstantiatedInPositions;
+        readonly Dictionary<GameObject, Transform> _instancesToSpawns;
+        readonly Transform _parent;
         
-        public EntitySpawner(GameObject prefab, Transform[] spawnPoints)
+        public EntitySpawner(GameObject prefab, Transform[] spawnPoints, Transform parent)
         {
             _prefab = prefab;
-            _spawnPoints = spawnPoints;
-            
-            _onObjectPicked = new EventListener<ObjectPickedEvent>(CheckPickedUp);
+            _parent = parent;
+            _prefabsInstantiatedInPositions = spawnPoints.ToDictionary(sp => sp, sp => (GameObject)null);
+            _instancesToSpawns = new Dictionary<GameObject, Transform>();
             _onObjectDropped = new EventListener<ObjectDroppedEvent>(AttemptSpawnReplacement);
-            EventBus<ObjectPickedEvent>.Register(_onObjectPicked);
             EventBus<ObjectDroppedEvent>.Register(_onObjectDropped);
-            
-            _prefabsInstantiatedInPositions = _spawnPoints.ToDictionary(sp => sp, sp => (GameObject)null);
         }
-
-        void AttemptSpawnReplacement(ObjectDroppedEvent obj)
-        {
-            Debug.Log("Spawning!");
-            _prefabsInstantiatedInPositions.TryGetValue(obj.Transform, out var instantiated);
-
-            if (instantiated == null)
-            {
-                SpawnEntities();
-            }
-        }
-
-        void CheckPickedUp(ObjectPickedEvent obj)
-        {
-            foreach (var key in _prefabsInstantiatedInPositions.Keys.ToList())
-            {
-                if (_prefabsInstantiatedInPositions[key] == obj.Transform.gameObject)
-                    _prefabsInstantiatedInPositions[key] = null;
-            }
-        }
-
+        
+        /// <summary>
+        /// Spawns the composite prefab given how empty the dictionary is based on the transform keys.
+        /// </summary>
         public void SpawnEntities()
         {
             var spawnPoints = Enumerable.ToHashSet(_prefabsInstantiatedInPositions
@@ -57,6 +40,36 @@ namespace FruitSimulation.Source.Entities
             {
                 var obj = Object.Instantiate(_prefab, spawn);
                 _prefabsInstantiatedInPositions[spawn] = obj;
+                _instancesToSpawns[obj] = spawn;
+            }
+        }
+        
+        /// <summary>
+        /// Checks if this object spawned is from this spawner.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public bool CheckPickedUp(ObjectPickedEvent obj)
+        {
+            var objRootTransform = obj.RootTransform;
+            var objGameObject = obj.TargetTransform.gameObject;
+            
+            if (_parent.name != objRootTransform.name)
+                return false; 
+
+            objGameObject.transform.SetParent(null);
+            _instancesToSpawns.Remove(objGameObject, out var spawn);
+            _prefabsInstantiatedInPositions[spawn] = null;
+            return true;
+        }
+        
+        void AttemptSpawnReplacement(ObjectDroppedEvent obj)
+        {
+            _prefabsInstantiatedInPositions.TryGetValue(obj.Transform, out var instantiated);
+
+            if (instantiated == null)
+            {
+                SpawnEntities();
             }
         }
     }

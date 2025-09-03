@@ -13,7 +13,7 @@ namespace FruitSimulation.Source.Animators
         readonly GameFeelVFXConfig _trunkEffectConfig;
         readonly AnimatorService _leafsAnimatorService;
         readonly AnimatorService _trunkAnimatorService;
-    
+        
         public TreeAnimator(MonoBehaviour host, GameFeelVFXConfig leafsEffectConfig, GameFeelVFXConfig trunkEffectConfig,
             SpriteRenderer treeSprite, SpriteRenderer trunkSprite)
         {
@@ -27,6 +27,20 @@ namespace FruitSimulation.Source.Animators
         {
             _leafsAnimatorService.ApplyConstantWobble(_leafsEffectConfig.WobbleFactor,_leafsEffectConfig.WobbleDuration);
             _trunkAnimatorService.ApplyConstantWobble(_trunkEffectConfig.WobbleFactor,_trunkEffectConfig.WobbleDuration);
+        }
+        
+        /// <summary>
+        ///  a quick squash + stretch, or a wobble burst
+        /// </summary>
+        public void ReactToFruitGrab()
+        {
+            float reactionMultiplier = 3f;
+            
+            _leafsAnimatorService.PlaySquash(_leafsEffectConfig.SquashFactor * reactionMultiplier);
+            _leafsAnimatorService.ApplyConstantWobble(
+                _leafsEffectConfig.WobbleFactor * reactionMultiplier, 
+                _leafsEffectConfig.WobbleDuration * reactionMultiplier
+            );
         }
     
     }
