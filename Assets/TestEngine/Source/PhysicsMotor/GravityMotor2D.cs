@@ -28,6 +28,7 @@ namespace TestEngine.Source.PhysicsMotor
         float _gravity;
         float _maxFallSpeed; 
         float _bounceFactor;
+        float _deceleration;
         CollisionInfo collisionInfo;
         LayerMask collisionMask;
         Transform _transform;
@@ -45,6 +46,7 @@ namespace TestEngine.Source.PhysicsMotor
             _gravity = config.GravityForce;
             _maxFallSpeed = config.MaxFallSpeed;
             _bounceFactor = config.BounceFactor;
+            _deceleration = config.Deceleration; // e.g., 15f
         }
         
         /// <summary>
@@ -58,9 +60,11 @@ namespace TestEngine.Source.PhysicsMotor
         public void Tick(float dt)
         {
             ApplyGravity(ref _velocity);
+            ApplyHorizontalDeceleration(ref _velocity, dt);
             ApplyMovement(dt);
-            SnapMovement(ref _velocity);
+            SnapVertical(ref _velocity);
         }
+
         
         void ApplyMovement(float dt)
         {
@@ -87,29 +91,20 @@ namespace TestEngine.Source.PhysicsMotor
 
             if (standingOnPlatform) collisionInfo.below = true;
         }
-
-
-        void SnapMovement(ref Vector2 velocity)
+        
+        void SnapVertical(ref Vector2 velocity)
         {
-            if (collisionInfo.below)
+            // Bounce only on the frame you *just* hit the ground
+            if (collisionInfo.below && velocity.y < 0)
             {
-                // Snap to exact floor
-                _transform.position = new Vector3(
-                    _transform.position.x,
-                    collisionInfo.platformStanding.bounds.max.y + (collider.bounds.size.y / 2f),
-                    _transform.position.z
-                );
-
-                // Only bounce if velocity high enough
                 if (Mathf.Abs(velocity.y) > MIN_BOUNCE_VELOCITY)
                 {
-                    Debug.Log("Velocity: " + Mathf.Abs(velocity.y) );
                     velocity.y = -velocity.y * _bounceFactor;
                     OnBounce?.Invoke();
                 }
                 else
                 {
-                    velocity.y = 0f; // Prevents small oscillations
+                    velocity.y = 0f; // settle on ground
                 }
             }
         }
@@ -129,16 +124,59 @@ namespace TestEngine.Source.PhysicsMotor
         void CheckHorizontalCollisions(ref Vector2 moveAmount)
         {
             float directionX = collisionInfo.faceDir;
-        
-            // Similar system to vertical checks, but adapted for slope handling.
+            float rayLength = Mathf.Abs(moveAmount.x) + SKIN_WIDTH;
+
+            if (Mathf.Abs(moveAmount.x) < SKIN_WIDTH)
+                rayLength = SKIN_WIDTH;
+
             for (int i = 0; i < HorizontalRayCount; i++)
             {
-                Vector2 rayOrigin = (directionX == -1) ? raycastOrigin.bottomLeft : raycastOrigin.bottomRight;
-                rayOrigin += Vector2.up * (HorizontalRaySpacing * i);
-                Debug.DrawRay(rayOrigin, Vector2.right * directionX, Color.red);
+                Vector2 rayOrigin = GetHorizontalRayOrigin(Mathf.Approximately(directionX, -1), i);
+                RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
+                Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.red);
+
+                if (!hit) continue;
+
+                // Snap movement flush against wall
+                moveAmount.x = (hit.distance - SKIN_WIDTH) * directionX;
+
+                // Only bounce if velocity is large enough
+                if (Mathf.Abs(_velocity.x) > 0.5f)
+                {
+                    _velocity.x = -_velocity.x * _bounceFactor; // use actual velocity
+                    OnBounce?.Invoke();
+
+                    // Recalculate moveAmount for this frame
+                    moveAmount.x = _velocity.x * Time.deltaTime;
+                }
+                else
+                {
+                    _velocity.x = 0;
+                }
+
+                collisionInfo.left = Mathf.Approximately(directionX, -1);
+                collisionInfo.right = Mathf.Approximately(directionX, 1);
+
+                break; // stop checking after first hit
             }
         }
+        
+        void ApplyHorizontalDeceleration(ref Vector2 velocity, float dt)
+        {
+            if (collisionInfo.left || collisionInfo.right) return; // skip deceleration when bouncing
+            if (Mathf.Approximately(velocity.x, 0)) return;
 
+            float decel = _deceleration * dt;
+            if (Mathf.Abs(velocity.x) <= decel)
+            {
+                velocity.x = 0;
+            }
+            else
+            {
+                velocity.x -= Mathf.Sign(velocity.x) * decel;
+            }
+        }
+        
         void CheckVerticalCollisions(ref Vector2 moveAmount)
         {
             float directionY = Mathf.Sign(moveAmount.y);
@@ -149,7 +187,7 @@ namespace TestEngine.Source.PhysicsMotor
             // Cast vertical rays to detect collisions above/below.
             for (int i = 0; i < VerticalRayCount; i++)
             {
-                rayOrigin = (directionY == -1) ? raycastOrigin.bottomLeft : raycastOrigin.topLeft;
+                rayOrigin = (Mathf.Approximately(directionY, -1)) ? raycastOrigin.bottomLeft : raycastOrigin.topLeft;
                 rayOrigin += Vector2.right * (VerticalRaySpacing * i + moveAmount.x);
 
                 raycastHit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, collisionMask);
@@ -170,8 +208,8 @@ namespace TestEngine.Source.PhysicsMotor
             
 
                 // Update collision state above/below.
-                collisionInfo.below = directionY == -1;
-                collisionInfo.above = directionY == 1;
+                collisionInfo.below = Mathf.Approximately(directionY, -1);
+                collisionInfo.above = Mathf.Approximately(directionY, 1);
             }
         }
     }

@@ -9,9 +9,10 @@ public class PhysicsConfig : ScriptableObject, IPhysicsConfig
     [SerializeField] float maxFallSpeed = -30;
     [Range(0f, 1f)] [SerializeField] float bounceFactor = 0.5f;
     [SerializeField] LayerMask collisionMask;
-    
+    [FormerlySerializedAs("deccaceleration")] [SerializeField] float decceleration;
     public float GravityForce => gravityForce;
     public float MaxFallSpeed => maxFallSpeed;
     public float BounceFactor => bounceFactor;
     public LayerMask CollisionMask => collisionMask;
+    public float Deceleration => decceleration;
 }

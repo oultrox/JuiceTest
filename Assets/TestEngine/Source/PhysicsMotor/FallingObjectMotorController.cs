@@ -10,6 +10,7 @@ namespace TestEngine.Source.PhysicsMotor
     {
         [SerializeField] PhysicsConfig physicsConfig;
         EventListener<ObjectPickedEvent> _onObjectPicked;
+        EventListener<ObjectDroppedEvent> _onObjectDropped;
         GravityMotor2D _motor;
         BoxCollider2D _collider;
         Vector2 _velocity;
@@ -36,15 +37,23 @@ namespace TestEngine.Source.PhysicsMotor
             _motor = new GravityMotor2D(transform, _collider, physicsConfig);
             _animator = new AnimatorService(this, _spriteRenderer);
             _onObjectPicked = new EventListener<ObjectPickedEvent>(CheckPickedUp);
+            _onObjectDropped = new EventListener<ObjectDroppedEvent>(LaunchObject);
             _motor.OnBounce += BounceSprite;
             EventBus<ObjectPickedEvent>.Register(_onObjectPicked);
+            EventBus<ObjectDroppedEvent>.Register(_onObjectDropped);
+        }
+
+        void LaunchObject(ObjectDroppedEvent obj)
+        {
+            _isActive = true;
+            _motor.SetVelocity(obj.Velocity);
         }
 
         void CheckPickedUp(ObjectPickedEvent obj)
         {
             if (obj.ObjectTransform != transform) return;
             
-            _isActive = true;
+            _isActive = false;
             transform.parent = null;
             _animator.PlayStretch(0.08f);
         }

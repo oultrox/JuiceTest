@@ -16,7 +16,8 @@ namespace TestEngine.Source.TouchInput
         Vector3 _offset;
         PlayerInput _playerInput;
         InputAction _clickAction;
-        
+        Vector3 _lastMouseWorldPos;
+        Vector2 _smoothedVelocity;
         
         void Awake()
         {
@@ -31,6 +32,7 @@ namespace TestEngine.Source.TouchInput
         void Update()
         {
             ApplyDragging();
+            CheckTouchVelocity();
         }
         
         private void InitBehaviors()
@@ -53,18 +55,12 @@ namespace TestEngine.Source.TouchInput
             _clickAction.canceled += ClearTarget;
         }
         
-        void ClearTarget(InputAction.CallbackContext context)
-        {
-            _currentTarget = null;
-        }
-
         void AttemptGrabTarget(InputAction.CallbackContext context)
         {
             var hit = Physics2D.Raycast(_camera.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 
                 float.MaxValue, movableLayerMask);
 
             if (hit.collider == null) return;
-            
             Debug.Log("OBJECT IS FOUND!: " + hit.collider.gameObject.name);
             _currentTarget = hit.transform;
             _offset = hit.transform.position - _camera.ScreenToWorldPoint(Input.mousePosition);
@@ -77,6 +73,24 @@ namespace TestEngine.Source.TouchInput
             {
                 _currentTarget.position = _camera.ScreenToWorldPoint(Input.mousePosition) + _offset;
             }
+        }
+        
+        void CheckTouchVelocity()
+        {
+            if (_currentTarget != null)
+            {
+                ApplyDragging();
+                Vector3 mouseWorldPos = _camera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+                _smoothedVelocity = (mouseWorldPos - _lastMouseWorldPos) / Time.deltaTime;
+                _lastMouseWorldPos = mouseWorldPos;
+            }
+        }
+        
+        void ClearTarget(InputAction.CallbackContext context)
+        {
+            if (_currentTarget == null) return; 
+            EventBus<ObjectDroppedEvent>.Raise(new ObjectDroppedEvent(_smoothedVelocity));
+            _currentTarget = null;
         }
     }
 }

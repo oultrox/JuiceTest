@@ -8,5 +8,6 @@ namespace TestEngine.Source.PhysicsMotor
         float MaxFallSpeed  { get; }
         float BounceFactor  { get;}
         LayerMask CollisionMask { get; }
+        float Deceleration { get; }
     }
 }

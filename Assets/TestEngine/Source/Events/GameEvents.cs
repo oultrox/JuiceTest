@@ -12,4 +12,14 @@ namespace TestEngine.Source.Events
             ObjectTransform = transform;
         }
     }
+    
+    public struct ObjectDroppedEvent : IEvent
+    {
+        public Vector2 Velocity { get;  private set; }
+
+        public ObjectDroppedEvent(Vector2 velocity)
+        {
+            Velocity = velocity;
+        }
+    }
 }
