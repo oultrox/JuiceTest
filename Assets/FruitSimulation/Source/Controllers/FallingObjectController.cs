@@ -1,4 +1,4 @@
-using AnimationService;
+using FruitSimulation.Source.Animators;
 using FruitSimulation.Source.Configs;
 using FruitSimulation.Source.Events;
 using FruitSimulation.Source.PhysicsMotor;
@@ -16,12 +16,13 @@ namespace FruitSimulation.Source.Controllers
         [Header ("Injection")]
         [SerializeField] GameFeelVFXConfig juiceConfig;
         [SerializeField] PhysicsConfig physicsConfig;
+        
         EventListener<ObjectPickedEvent> _onObjectPicked;
         EventListener<ObjectDroppedEvent> _onObjectDropped;
         GravityMotor2D _motor;
         BoxCollider2D _collider;
         Vector2 _velocity;
-        AnimatorService _animator;
+        FruitAnimator _animator;
         SpriteRenderer _spriteRenderer;
         
         
@@ -43,8 +44,8 @@ namespace FruitSimulation.Source.Controllers
             _motor = new GravityMotor2D(transform, _collider, physicsConfig);
             _motor.OnBounce += BounceSprite;
             
-            _animator = new AnimatorService(this, _spriteRenderer);
-            _animator.PlayShrinkFromSmallToBig(juiceConfig.ShrinkFactor, juiceConfig.ShrinkDuration);
+            _animator = new FruitAnimator(this, _spriteRenderer, juiceConfig);
+            _animator.PlayShrink();
             
             _onObjectPicked = new EventListener<ObjectPickedEvent>(CheckPickedUp);
             _onObjectDropped = new EventListener<ObjectDroppedEvent>(LaunchObject);
@@ -67,12 +68,12 @@ namespace FruitSimulation.Source.Controllers
             
             transform.parent = null;
             _motor.SetActive(false);
-            _animator.PlayStretch(juiceConfig.StretchFactor);
+            _animator.PlayStretch();
         }
         
         void BounceSprite()
         {
-            _animator.PlaySquash(juiceConfig.SquashFactor);
+            _animator.PlaySquash();
         }
     }
 }
