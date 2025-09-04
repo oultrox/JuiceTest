@@ -142,7 +142,7 @@ RippleEffectController:
 
 ## Possible improvements
 - The physics engine does not like high speeds against walls...
-- Implement my own dependency injection framework here to avoid even more serializations and centralize my Monobehaviors, the less, the better. 
+- Implement my own dependency injection framework here to avoid even more serializations and centralize my Monobehaviors, the less, the better... or rather just use a more formalized single entry point. my components are modular between them so there's no harm as of today.  
 
 And that's it! 
 
