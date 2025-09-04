@@ -3,7 +3,7 @@
 namespace CustomRaycastEngine
 {
     /// <summary>
-    /// Raycast-based motor for simulated physics.
+    /// Raycast-based motor for simulated physics based on a box collider bounds.
     /// </summary>
     public class RaycastMotor2D
     {
