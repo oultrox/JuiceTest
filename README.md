@@ -1,6 +1,6 @@
 # Fruit Simulation Take-Home Project
 
-This project is a technical test showcasing **drag-and-drop mechanics, physics-driven object behavior, and responsive animation systems** in Unity using **C#** and **Scriptable Event Bus patterns**.
+This project is a technical test showcasing **drag-and-drop mechanics, physics-driven object behavior, and responsive animation systems** in Unity using **C#**,  **Event Bus pattern**, dependency injection and composition.
 ![Fruits!](https://github.com/user-attachments/assets/d420913c-acc7-4cfb-afa0-254a341dca07)
 
 ---
