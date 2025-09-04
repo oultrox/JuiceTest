@@ -14,8 +14,6 @@ namespace FruitSimulation.Source.PhysicsMotor
         {
             public bool above, below;
             public bool left, right;
-            public int faceDir;
-
             public void Reset()
             {
                 above = below = left = right = false;
@@ -38,7 +36,6 @@ namespace FruitSimulation.Source.PhysicsMotor
         public GravityMotor2D(Transform transform, BoxCollider2D collider, IPhysicsConfig config) : base(collider)
         {
             _transform = transform;
-            _collisionInfo.faceDir = 1;
             _collisionMask = config.CollisionMask;
             _gravity = config.GravityForce;
             _maxFallSpeed = config.MaxFallSpeed;
@@ -86,9 +83,7 @@ namespace FruitSimulation.Source.PhysicsMotor
         {
             UpdateRaycastOrigins();
             _collisionInfo.Reset();
-
-            if (moveAmount.x != 0) _collisionInfo.faceDir = (int)Mathf.Sign(moveAmount.x);
-
+            
             CheckHorizontalCollisions(ref moveAmount);
             if (moveAmount.y != 0) CheckVerticalCollisions(ref moveAmount);
 
@@ -148,43 +143,51 @@ namespace FruitSimulation.Source.PhysicsMotor
         /// <param name="moveAmount"></param>
         void CheckHorizontalCollisions(ref Vector2 moveAmount)
         {
-            float directionX = _collisionInfo.faceDir;
-            float rayLength = Mathf.Abs(moveAmount.x) + SKIN_WIDTH;
+            float moveDirectionX = Mathf.Sign(moveAmount.x);
 
-            if (Mathf.Abs(moveAmount.x) < SKIN_WIDTH)
-                rayLength = SKIN_WIDTH;
-
-            for (int i = 0; i < HorizontalRayCount; i++)
+            // We loop both sides to cover edge cases.
+            for (int dir = -1; dir <= 1; dir += 2) // -1 = left, 1 = right
             {
-                Vector2 rayOrigin = GetHorizontalRayOrigin(Mathf.Approximately(directionX, -1), i);
-                RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, _collisionMask);
-                Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.red);
+                // Only check rays in this direction if we are moving toward it OR if stationary
+                if (moveDirectionX != 0 && dir != moveDirectionX) continue;
 
-                if (!hit) continue;
+                float rayLength = Mathf.Abs(moveAmount.x) + SKIN_WIDTH * 2;
 
-                // Snap movement flush against wall
-                moveAmount.x = (hit.distance - SKIN_WIDTH) * directionX;
-
-                // Only bounce if velocity is large enough
-                if (Mathf.Abs(_velocity.x) > MIN_BOUNCE_VELOCITY)
+                for (int i = 0; i < HorizontalRayCount; i++)
                 {
-                    _velocity.x = -_velocity.x * _bounceFactor; // use actual velocity
-                    OnBounce?.Invoke();
+                    Vector2 rayOrigin = GetHorizontalRayOrigin(dir == -1, i);
+                    RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * dir, rayLength, _collisionMask);
+                    Debug.DrawRay(rayOrigin, Vector2.right * dir * rayLength, Color.red);
 
-                    // Recalculate moveAmount for this frame
-                    moveAmount.x = _velocity.x * Time.deltaTime;
+                    if (!hit) continue;
+
+                    // Snap flush against wall
+                    moveAmount.x = (hit.distance - SKIN_WIDTH) * dir;
+
+                    // Bounce only if velocity is large enough
+                    if (Mathf.Abs(_velocity.x) > MIN_BOUNCE_VELOCITY)
+                    {
+                        _velocity.x = -_velocity.x * _bounceFactor;
+                        OnBounce?.Invoke();
+
+                        // Apply the new velocity for this frame
+                        moveAmount.x = _velocity.x * Time.deltaTime;
+                    }
+                    else
+                    {
+                        _velocity.x = 0;
+                    }
+
+                    // Update collision info
+                    _collisionInfo.left = dir == -1;
+                    _collisionInfo.right = dir == 1;
+
+                    // Stop checking rays in this direction after first hit
+                    break;
                 }
-                else
-                {
-                    _velocity.x = 0;
-                }
-
-                _collisionInfo.left = Mathf.Approximately(directionX, -1);
-                _collisionInfo.right = Mathf.Approximately(directionX, 1);
-
-                break; // stop checking after first hit
             }
         }
+
         
         /// <summary>
         /// Checks vertical collisions separately for more precise ground calculations, applying bounce factors if possible.
@@ -200,12 +203,11 @@ namespace FruitSimulation.Source.PhysicsMotor
             // Cast vertical rays to detect collisions above/below.
             for (int i = 0; i < VerticalRayCount; i++)
             {
-                rayOrigin = (Mathf.Approximately(directionY, -1)) ? raycastOrigin.bottomLeft : raycastOrigin.topLeft;
-                rayOrigin += Vector2.right * (VerticalRaySpacing * i + moveAmount.x);
+                rayOrigin = GetVerticalRayOrigin(directionY == -1, i);
+                rayOrigin += Vector2.right * moveAmount.x; // add actual horizontal movement
 
                 raycastHit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, _collisionMask);
-
-                Debug.DrawRay(rayOrigin, Vector2.up * directionY, Color.red);
+                Debug.DrawRay(rayOrigin, Vector2.up * rayLength, Color.red);
 
                 if (!raycastHit)
                 {
@@ -215,8 +217,7 @@ namespace FruitSimulation.Source.PhysicsMotor
                 // Apply vertical adjustment.
                 moveAmount.y = (raycastHit.distance - SKIN_WIDTH) * directionY;
                 rayLength = raycastHit.distance;
-            
-
+                
                 // Update collision state above/below.
                 _collisionInfo.below = Mathf.Approximately(directionY, -1);
                 _collisionInfo.above = Mathf.Approximately(directionY, 1);
