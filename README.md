@@ -7,7 +7,7 @@
 
 The Fruit Simulation project allows users to **pick, drag, and launch objects (fruits)** that respond to (rather jittery…) physics and play  some fun code-driven animations.
 
-- Built in Unity3D `2022.45f`
+- Built in Unity3D `2022.3.45f1`
 - Modular architecture using made-in-home dependency injection, event bus pattern and composition.
 - Physics interactions handled with a custom **GravityMotor2D** engine
 - Smooth drag input with velocity calculation for realistic object launches
