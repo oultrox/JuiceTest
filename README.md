@@ -40,7 +40,7 @@ Assets
 │   └─ RaycastMotor2D.cs        # 2D-specific movement motor
 │
 ├─ FruitSimulation
-│   ├─ InputConfigs              # ScriptableObjects / input mappings
+│   ├─ InputConfigs              # Input mappings
 │   ├─ Prefabs                   # Fruit/tree prefabs
 │   ├─ Scenes
 │   ├─ SOs                       # ScriptableObjects for configs / data
