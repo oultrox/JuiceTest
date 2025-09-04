@@ -11,6 +11,7 @@ namespace FruitSimulation.Source.Configs
         float MaxFallSpeed  { get; }
         float BounceFactor  { get;}
         LayerMask CollisionMask { get; }
+        LayerMask GrabbableMask { get; }
         float Deceleration { get; }
     }
 }

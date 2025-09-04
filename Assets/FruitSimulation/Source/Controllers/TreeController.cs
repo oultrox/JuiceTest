@@ -8,7 +8,7 @@ using UnityEngine;
 namespace FruitSimulation.Source.Controllers
 {
     /// <summary>
-    /// orchestrates animations and spawning of the fruit.
+    /// Injects animations and spawning of the fruit.
     /// </summary>
     public class TreeController: MonoBehaviour
     { 

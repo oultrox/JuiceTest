@@ -1,3 +1,4 @@
+using System;
 using FruitSimulation.Source.Animators;
 using FruitSimulation.Source.Configs;
 using FruitSimulation.Source.Events;
@@ -30,10 +31,16 @@ namespace FruitSimulation.Source.Controllers
         {
             InitBehaviors();
         }
-
+        
         void Update()
         {
             _motor.Tick(Time.deltaTime);
+        }
+        
+        void OnDisable()
+        {
+            EventBus<ObjectPickedEvent>.Deregister(_onObjectPicked);
+            EventBus<ObjectDroppedEvent>.Deregister(_onObjectDropped);
         }
         
         void InitBehaviors()
@@ -53,7 +60,7 @@ namespace FruitSimulation.Source.Controllers
             EventBus<ObjectPickedEvent>.Register(_onObjectPicked);
             EventBus<ObjectDroppedEvent>.Register(_onObjectDropped);
         }
-
+        
         void LaunchObject(ObjectDroppedEvent obj)
         {
             if (obj.Transform != transform) return;
