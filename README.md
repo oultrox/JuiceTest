@@ -24,6 +24,7 @@ The Fruit Simulation project allows users to **pick, drag, and launch objects (f
 - **Spawner System:** `EntitySpawner` generates fruits at specified spawn points with associated animations.
 - Domain-driven directory favoring composition and the use of namespaces.
 - **Code Driven** Animations like squash, stretch, wobble, shrink!
+- Favored SO data-oriented containers over million of magic numbers and serialized fields.
 
 ### Service animator pattern showcase
 ```csharp
@@ -251,6 +252,14 @@ RippleEffectController:
 - Executes Ripple Effect.
 
 ```
+
+## How to edit some values for designers 
+You'll find in `Assets/FruitSimulation/SOs` some good config files you can most likely modify even in runtime editor, not sure how all of them are this dynamic though.
+- Code-driven juice effects factors and duration lerps
+- Bouncy factors in the `PhysicsConfig`, etc.
+
+<img width="1919" height="616" alt="image" src="https://github.com/user-attachments/assets/5d58be77-be3f-475b-96c7-994921a1a34f" />
+
 
 ## Possible improvements
 - The physics engine does not like high speeds against walls...
