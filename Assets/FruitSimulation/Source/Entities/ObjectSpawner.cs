@@ -9,7 +9,7 @@ namespace FruitSimulation.Source.Entities
     /// <summary>
     /// Just takes care of spawning given prefabs. Nothing fancy.
     /// </summary>
-    public class EntitySpawner
+    public class ObjectSpawner
     {
         readonly GameObject _prefab;
         readonly EventListener<ObjectDroppedEvent> _onObjectDropped;
@@ -17,7 +17,7 @@ namespace FruitSimulation.Source.Entities
         readonly Dictionary<GameObject, Transform> _instancesToSpawns;
         readonly Transform _parent;
         
-        public EntitySpawner(GameObject prefab, Transform[] spawnPoints, Transform parent)
+        public ObjectSpawner(GameObject prefab, Transform[] spawnPoints, Transform parent)
         {
             _prefab = prefab;
             _parent = parent;

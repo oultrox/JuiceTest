@@ -22,7 +22,7 @@ namespace FruitSimulation.Source.Controllers
         [SerializeField] GameFeelVFXConfig _trunkEffectConfig; 
         [SerializeField] Transform[] spawnerPoints;
         
-        EntitySpawner _spawner;
+        ObjectSpawner _spawner;
         TreeAnimator _treeAnimator;
         EventListener<ObjectPickedEvent> _onFruitGrabbed;
 
@@ -39,7 +39,7 @@ namespace FruitSimulation.Source.Controllers
         void SetBehaviors()
         {
             _treeAnimator = new TreeAnimator(this, _leafsEffectConfig, _trunkEffectConfig, treeSprite, trunkSprite);
-            _spawner = new EntitySpawner(objectPrefab, spawnerPoints, transform);
+            _spawner = new ObjectSpawner(objectPrefab, spawnerPoints, transform);
             _spawner.SpawnEntities();
             _onFruitGrabbed = new EventListener<ObjectPickedEvent>(OnFruitGrabbed);
             EventBus<ObjectPickedEvent>.Register(_onFruitGrabbed);

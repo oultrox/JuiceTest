@@ -98,8 +98,8 @@ namespace FruitSimulation.Source.PhysicsMotor
         
         void SnapVertical(ref Vector2 velocity)
         {
-            // Bounce only on the frame you *just* hit the ground
-            if (_collisionInfo.below && velocity.y < 0)
+            // Always snap to floor if below
+            if (_collisionInfo.below)
             {
                 if (Mathf.Abs(velocity.y) > MIN_BOUNCE_VELOCITY)
                 {
@@ -108,7 +108,7 @@ namespace FruitSimulation.Source.PhysicsMotor
                 }
                 else
                 {
-                    velocity.y = 0f; // settle on ground
+                    velocity.y = 0f; 
                 }
             }
         }
@@ -196,31 +196,29 @@ namespace FruitSimulation.Source.PhysicsMotor
         void CheckVerticalCollisions(ref Vector2 moveAmount)
         {
             float directionY = Mathf.Sign(moveAmount.y);
-            float rayLength = Mathf.Abs(moveAmount.y) + SKIN_WIDTH;
+            float rayLength = Mathf.Abs(moveAmount.y) + SKIN_WIDTH * 2; // safer distance
             Vector2 rayOrigin;
-            RaycastHit2D raycastHit;
 
-            // Cast vertical rays to detect collisions above/below.
+            _collisionInfo.below = false;
+            _collisionInfo.above = false;
+
             for (int i = 0; i < VerticalRayCount; i++)
             {
                 rayOrigin = GetVerticalRayOrigin(directionY == -1, i);
-                rayOrigin += Vector2.right * moveAmount.x; // add actual horizontal movement
+                rayOrigin += Vector2.right * moveAmount.x;
 
-                raycastHit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, _collisionMask);
-                Debug.DrawRay(rayOrigin, Vector2.up * rayLength, Color.red);
+                RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, _collisionMask);
+                Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength, Color.red);
 
-                if (!raycastHit)
-                {
-                    continue;
-                }
-                
-                // Apply vertical adjustment.
-                moveAmount.y = (raycastHit.distance - SKIN_WIDTH) * directionY;
-                rayLength = raycastHit.distance;
-                
-                // Update collision state above/below.
-                _collisionInfo.below = Mathf.Approximately(directionY, -1);
-                _collisionInfo.above = Mathf.Approximately(directionY, 1);
+                if (!hit) continue;
+
+                // Correct moveAmount
+                moveAmount.y = (hit.distance - SKIN_WIDTH) * directionY;
+                rayLength = hit.distance;
+
+                // Update collision info
+                if (directionY < 0) _collisionInfo.below = true;
+                else _collisionInfo.above = true;
             }
         }
     }
