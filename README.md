@@ -20,7 +20,7 @@ The Fruit Simulation project allows users to **pick, drag, and launch objects (f
 ## Features
 
 - **Drag & Drop Mechanics:** Objects can be clicked and dragged naturally with smooth velocity tracking.
-- **Custom Physics Engine based on raycasts:** Includes gravity, deceleration, and bounce factors for realistic fruit interactions.
+- **Custom Physics Engine based on raycasts:** Includes gravity, deceleration, and bounce factors for realistic fruit interactions. 0 Rigidbodies. I missed them.
 - **Event-Driven System:** `ObjectPickedEvent` and `ObjectDroppedEvent` propagate interactions to all listening systems aiming to create decoupled systems or singleton nightmares.
 - **Dynamic Animations:** Fruit stretches, squashes, and shrinks using the `FruitAnimator`. Tree reacts to fruit interactions.
 - **Spawner System:** `EntitySpawner` generates fruits at specified spawn points with associated animations.
