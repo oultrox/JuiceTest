@@ -53,7 +53,7 @@ namespace FruitSimulation.Source.PhysicsMotor
         }
         
         /// <summary>
-        /// Optional: set initial velocity for throwing objects.
+        /// set initial velocity for throwing objects.
         /// </summary>
         public void SetVelocity(Vector2 velocity)
         {

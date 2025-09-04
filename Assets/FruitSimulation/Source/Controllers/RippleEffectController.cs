@@ -3,7 +3,7 @@ using SimpleBus;
 using UnityEngine;
 
 /// <summary>
-/// Flex component.
+/// Flex component. Uses very old ripple effect!
 /// </summary>
 public class RippleEffectController : MonoBehaviour
 {

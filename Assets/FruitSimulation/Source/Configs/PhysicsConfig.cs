@@ -1,8 +1,10 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace FruitSimulation.Source.Configs
 {
+    /// <summary>
+    /// Configuration file for modifying the physics forces.
+    /// </summary>
     [CreateAssetMenu(fileName = "Config", menuName = "Configuration/PhysicsConfig", order = 1)]
     public class PhysicsConfig : ScriptableObject, IPhysicsConfig
     {
