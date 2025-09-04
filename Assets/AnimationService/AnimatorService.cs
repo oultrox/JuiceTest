@@ -31,7 +31,7 @@ namespace AnimationService
         }
         
         /// <summary>
-        /// Plays a stretch effect by vertically stretching the scale of the sprite and resetting it.
+        /// Plays a shrinking effect by playing from a factor scale of the sprite and resetting it.
         /// </summary>
         public void PlayShrinkFromSmallToBig(float scale = 0.2f, float duration = 0.5f)
         {
