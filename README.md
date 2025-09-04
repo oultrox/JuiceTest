@@ -9,7 +9,7 @@ This project is a technical test showcasing **drag-and-drop mechanics, physics-d
 
 The Fruit Simulation project allows users to **pick, drag, and launch objects (fruits)** that respond to (rather jittery…) physics and play  some fun code-driven animations.
 
-- Built in Unity3D  2022.45f with C#
+- Built in Unity3D `2022.45f`
 - Modular architecture using made-in-home dependency injection, event bus pattern and composition.
 - Physics interactions handled with a custom **GravityMotor2D** engine
 - Smooth drag input with velocity calculation for realistic object launches
@@ -78,7 +78,20 @@ Assets
 
 ---
 
+## How to play 
+- Open The only scene `TestScene`
+- Run the game, enjoy it. 
+
+<img width="610" height="409" alt="image" src="https://github.com/user-attachments/assets/f70425bf-882f-44f7-9ca9-a7882f1d3320" />
+
+
+---
+
 ## Main Controllers
+
+
+<img width="614" height="184" alt="image" src="https://github.com/user-attachments/assets/0d492f73-4821-4f18-998a-9ad392584993" />
+
 
 ### **1. DraggerController**
 
@@ -116,3 +129,14 @@ TreeController:
 - Plays leaf/trunk VFX on fruit grab using TreeAnimator
 
 ```
+
+### **4. RippleEffectController**
+
+Manages fruit spawning and tree reactions.
+
+```csharp
+RippleEffectController:
+- Executes Ripple Effect.
+
+```
+
