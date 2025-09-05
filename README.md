@@ -183,8 +183,8 @@ Assets
 │
 └─ RippleEffect
     ├─ RippleEffect.cs
-    ├─ RippleEffectMaterial.mat   # If this is a material
-    └─ RippleEffectPrefab.prefab  # If this is a prefab
+    ├─ RippleEffectMaterial.mat   # Just flex
+    └─ RippleEffectPrefab.prefab  
 
 
 ```
