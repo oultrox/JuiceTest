@@ -11,7 +11,7 @@ The Fruit Simulation project allows users to **pick, drag, and launch objects (f
 - Modular architecture using made-in-home dependency injection, event bus pattern and composition.
 - Physics interactions handled with a custom **GravityMotor2D** engine
 - Smooth drag input with velocity calculation for realistic object launches
-- Some fun Warping effect for the custom feature I added.
+- Some fun ripple effect for funsies.
 
 ---
 
